@@ -11,14 +11,14 @@
                         <textarea id="prompt" class="textarea is-large" name="text" rows="9" placeholder="Escreva sua solicitação aqui!"></textarea>
                     </div>
                 </div>
-                <button id="send_gpt" class="button is-responsive is-outlined is-block is-info is-large is-fullwidth has-text-weight-bold">Gerar descrição</button>
+                <button id="send_gpt" class="button is-responsive is-outlined is-block is-info is-large is-fullwidth">Gerar descrição</button>
             </div>
         </div>
         <div class="column is-three-fifths">
             <div class="box" style="background-color: white;">
                 <div class="field">
                     <div class="control">
-                        <textarea class="textarea is-large" disabled name="text" rows="12" placeholder="O texto do ticket será gerado aqui. Valide antes de enviar!">
+                        <textarea class="textarea is-large" disabled name="text" rows="12" placeholder="O texto do ticket será gerado aqui. Valide antes de enviar!" style="resize: none;">
                             {{ resp_gpt }}
                         </textarea>
                         <b><p style="text-align: center;">Caso o texto se adeque ao que precisa, clique no botão "Enviar Card" abaixo, para finalizar. <br/>Do contrário, reescreva e gere a descrição novamente.</p></b>
