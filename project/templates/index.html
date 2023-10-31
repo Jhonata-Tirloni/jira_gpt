@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="columns">
+        <div class="column is-two-fifths">
+            <div class="box" style="background-color: white;">
+                <img src="../static/jira_gpt.png" width="400" style="display: block; margin-left: auto; margin-right: auto;"/>
+                <form method="POST" action="/login">
+                    <div class="field">
+                        <div class="control">
+                            <textarea class="textarea is-large" name="text" rows="9" placeholder="Escreva sua solicitação aqui!"></textarea>
+                        </div>
+                    </div>
+                    <button class="button is-responsive is-outlined is-block is-info is-large is-fullwidth has-text-weight-bold">Gerar descrição</button>
+                </form>
+            </div>
+        </div>
+        <div class="column is-three-fifths">
+            <div class="box" style="background-color: white;">
+                <form method="POST" action="/login">
+                    <div class="field">
+                        <div class="control">
+                            <textarea class="textarea is-large" disabled name="text" rows="12" placeholder="O texto do ticket será gerado aqui. Valide antes de enviar!"></textarea>
+                            <b><p style="text-align: center;">Caso o texto se adeque ao que precisa, clique no botão "Enviar Card" abaixo, para finalizar. <br/>Do contrário, reescreva e gere a descrição novamente.</p></b>
+                            <button class="button is-responsive is-block is-info is-large is-fullwidth has-text-weight-bold" style="background-color: #3FA110;">Criar card</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
