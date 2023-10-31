@@ -1,9 +1,7 @@
-from flask import Blueprint, render_template, redirect, session, url_for
-# import os
+from flask import Blueprint, render_template, redirect, request, session, url_for
 import openai
 import json
 from atlassian import Jira
-
 
 main = Blueprint('main', __name__)
 
@@ -52,8 +50,14 @@ def create_jira_task():
     return print(f"task criada com o código {response['key']}")
 
 
-@main.route('/gerar_descricao')
+@main.route('/gerar_descricao', methods=['POST'])
 def call_gpt():
+    openai.api_type = "azure"
+    openai.api_base = "https://cognicao-dev-clustheo.openai.azure.com/"
+    openai.api_version = "2023-03-15-preview"
+    openai.api_key = "2a4a3463bc2c4a6e8b336c1fcfd9db2a"
+
+    data = request.get_json()
 
     SYSTEM_PROMPT = '''Você é um auxiliar de criação de tarefas para um
         time de dados, funcionando como atendende de pessoas de negócio
@@ -64,22 +68,21 @@ def call_gpt():
         requisição feita.
         Retorne isso como um dicionário python, chave valor'''
 
-    text = input("Escreva sua solicitação ao time Data Vader aqui: ")
-
     response = openai\
         .ChatCompletion\
         .create(engine="gpt-4",
                 messages=[{"role": "system",
                            "content": SYSTEM_PROMPT},
                           {"role": "user",
-                           "content": text}],
+                           "content": str(data['prompt'])}],
                 temperature=0.7,
                 max_tokens=800,
                 top_p=0.95,
                 frequency_penalty=0,
                 presence_penalty=0,
-                stop=None)
+                stop=None,
+                verify=False)
 
     session['resp_gept'] = response
 
-    return redirect(url_for('create_jira_task'))
+    return render_template('index.html', resp_gpt = response['descrição'])
