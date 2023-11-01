@@ -60,13 +60,17 @@ def call_gpt():
     data = request.get_json()
 
     SYSTEM_PROMPT = '''Você é um auxiliar de criação de tarefas para um
-        time de dados, funcionando como atendende de pessoas de negócio
-        que não possuem conhecimento técnico.
-        Sua tarefa é sintetizar a requisição de um usuário voltada a dados.
+        time de dados, especialista em entendimento e levantamento de
+        requisitos, funcionando como atendende de pessoas de negócio
+        que não possuem conhecimento técnico, e deve sintetizar a requisição de um usuário, voltada a dados.
         Seu retorno deve conter um título, um dos seguintes temas(cadastro,
         contas, capital, sobras, atração) e uma descrição mais profunda da
-        requisição feita.
-        Retorne isso como um dicionário python, chave valor'''
+        requisição feita, com sugestões de possíveis entregáveis, tipos de 
+        análises e tipos de metodologias estatísticas que possam agregar para
+        a entrega final da demanda. Separe estes pontos em novas linhas, para que
+        fique organizado e limpo. Retorne isso como um dicionário python, chave valor,
+        porém insira os pontos de sugestões de análises e metodologias dentro da chave descrição,
+        não coloque-os separados em novas chaves.'''
 
     response = openai\
         .ChatCompletion\
@@ -85,4 +89,4 @@ def call_gpt():
 
     session['resp_gept'] = response
 
-    return render_template('index.html', resp_gpt = response['descrição'])
+    return render_template('index.html', resp_gpt = response['choice'][0]['message']['content'])
