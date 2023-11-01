@@ -15,14 +15,14 @@
             </div>
         </div>
         <div class="column is-three-fifths">
+            <img id="loading" hidden src="../static/Spin-1s-200px.gif" width="30"/>
             <div class="box" style="background-color: white;">
-                <img id="loading" hidden src="../static/Spin-1s-200px.gif" width="30"/>
                 <div class="field">
                     <div class="control">
                         <textarea id="response_gpt" class="textarea is-large" disabled name="text" rows="12" placeholder="O texto do ticket será gerado aqui. Valide antes de enviar!" style="resize: none;">
                         </textarea>
                         <b><p style="text-align: center;">Caso o texto se adeque ao que precisa, clique no botão "Enviar Card" abaixo, para finalizar. <br/>Do contrário, reescreva e gere a descrição novamente.</p></b>
-                        <button id="send" class="button is-responsive is-block is-info is-large is-fullwidth has-text-weight-bold" style="background-color: #3FA110;">Criar card</button>
+                        <button id="send_jira" class="button is-responsive is-block is-info is-large is-fullwidth has-text-weight-bold" style="background-color: #3FA110;">Criar card</button>
                     </div>
                 </div>
             </div>
@@ -47,8 +47,22 @@
                 $('#loading').hide();
             }
         });
+    });
 
-        document.getElementById("loading").setAttribute('hidden', true)
+    document.getElementById("send_jira").addEventListener("click", function(){
+        $('#loading').show();
+        
+        $.ajax({
+            url: '/create_jira_task',
+            type: 'GET',
+            dataType: 'json',
+            success: function(response){
+                alert("Card criado com sucesso! Seu número é: " + response.response + ". Anote ou copie para ter controle! Você também pode acompanhar direto no board do time.")
+            },
+            complete: function(){
+                $('#loading').hide();
+            }
+        });
     });
 </script>
 {% endblock %}

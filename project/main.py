@@ -17,13 +17,14 @@ def test():
     return render_template('test.html', resp_gpt = session['resp_gpt'])
 
 
-@main.route('/create_jira_task')
+@main.route('/create_jira_task', methods=['GET'])
 def create_jira_task():
     res_gpt = session.get('resp_gpt')
-    data = json.loads(res_gpt["choices"][0]["message"]["content"])
+    data = json.loads(res_gpt["choices"][0]["message"]["content"], strict=False)
     titulo = data["Título"]  # incluir tratamento do retorno para pegar titulo
     tema = data["Tema"]  # incluir tratamento do retorno para pegar tema
     descricao = data["Descrição"]  # incluir tratamento do retorno desc.
+    
     fields = {
         "project": {"id": 31858},
         "summary": f"[{tema}]{titulo}",
@@ -47,13 +48,13 @@ def create_jira_task():
 
     jira = Jira(
         url="https://teams.sicredi.io/",
-        username="",
-        password=""
+        username="app_jira_assocontas",
+        password="@ut0s3rv1c0DV"
     )
 
     response = jira.issue_create(fields)
 
-    return print(f"task criada com o código {response['key']}")
+    return jsonify({'response':response['key']})
 
 
 @main.route('/gerar_descricao', methods=['POST'])
