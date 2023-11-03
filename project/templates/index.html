@@ -57,7 +57,19 @@
             type: 'GET',
             dataType: 'json',
             success: function(response){
-                alert("Card criado com sucesso! Seu número é: " + response.response + ". Anote ou copie para ter controle! Você também pode acompanhar direto no board do time.")
+                Toastify({
+                    text:"Card criado com sucesso! Seu número é: " + response.response + ". Anote ou copie para ter controle! Você também pode acompanhar direto no board do time.",
+                    duration: 120000,
+                    destination: "#",
+                    newWindow: false,
+                    close: true,
+                    gravity: "top",
+                    position: "center",
+                    stopOnFocus: true,
+                    style: {
+                        background: "linear-gradient(to right, #00b09b, #3FA110)"
+                    }
+                }).showToast();
             },
             complete: function(){
                 $('#loading').hide();
