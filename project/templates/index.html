@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="container">
     <div class="columns">
@@ -8,21 +7,30 @@
                 <img src="../static/jira_gpt.png" width="400" style="display: block; margin-left: auto; margin-right: auto;"/>
                 <div class="field">
                     <div class="control">
-                        <textarea id="prompt" class="textarea is-large" name="text" rows="9" placeholder="Escreva sua solicitação aqui!"></textarea>
+                        <textarea id="prompt" class="textarea is-large" name="text" rows="9" placeholder="Escreva sua solicitação aqui!" style="resize: none;">
+                        </textarea>
                     </div>
                 </div>
-                <button id="send_gpt" class="button is-responsive is-outlined is-block is-info is-large is-fullwidth">Gerar descrição</button>
+                <button id="send_gpt" class="button is-responsive is-outlined is-block is-info is-large is-fullwidth">
+                    Gerar descrição
+                </button>
             </div>
         </div>
         <div class="column is-three-fifths">
-            <img id="loading" hidden src="../static/Spin-1s-200px.gif" width="30"/>
             <div class="box" style="background-color: white;">
                 <div class="field">
                     <div class="control">
-                        <textarea id="response_gpt" class="textarea is-large" disabled name="text" rows="12" placeholder="O texto do ticket será gerado aqui. Valide antes de enviar!" style="resize: none;">
+                        <img id="loading" hidden src="../static/typing_loading.gif" width="76" style="position: absolute; z-index: 99999; margin-top: 25rem;"/>
+                        <textarea id="response_gpt" class="textarea is-large" disabled name="text" rows="12" style="resize: none;">
                         </textarea>
-                        <b><p style="text-align: center;">Caso o texto se adeque ao que precisa, clique no botão "Enviar Card" abaixo, para finalizar. <br/>Do contrário, reescreva e gere a descrição novamente.</p></b>
-                        <button id="send_jira" class="button is-responsive is-block is-info is-large is-fullwidth has-text-weight-bold" style="background-color: #3FA110;">Criar card</button>
+                        <b>
+                            <p style="text-align: center;">
+                                Caso o texto se adeque ao que precisa, clique no botão "Enviar Card" abaixo, para finalizar. <br/>Do contrário, reescreva e gere a descrição novamente.
+                            </p>
+                        </b>
+                        <button id="send_jira" class="button is-responsive is-block is-info is-large is-fullwidth has-text-weight-bold" style="background-color: #3FA110;">
+                            Criar card
+                        </button>
                     </div>
                 </div>
             </div>
@@ -32,6 +40,8 @@
 <script type=text/javascript>
     document.getElementById("send_gpt").addEventListener("click", function() {
         var promptValue = document.getElementById("prompt").value;
+
+        $("#response_gpt").val('');
 
         $('#loading').show();
 
@@ -51,6 +61,9 @@
 
     document.getElementById("send_jira").addEventListener("click", function(){
         $('#loading').show();
+
+        const success_message_pone = "Card criado com sucesso! Seu número é: "
+        const success_message_ptwo = ". Anote ou copie para ter controle! Você também pode acompanhar direto no board do time."
         
         $.ajax({
             url: '/create_jira_task',
@@ -58,7 +71,7 @@
             dataType: 'json',
             success: function(response){
                 Toastify({
-                    text:"Card criado com sucesso! Seu número é: " + response.response + ". Anote ou copie para ter controle! Você também pode acompanhar direto no board do time.",
+                    text: success_message_pone + response.response + success_message_ptwo,
                     duration: 120000,
                     destination: "#",
                     newWindow: false,
