@@ -1,30 +1,32 @@
-from flask import Blueprint,jsonify, render_template, redirect, request, session, url_for
-import openai
+from typing import IO
 import json
+from flask import Blueprint,jsonify, render_template, request, session
+import openai
 from atlassian import Jira
-import pip_system_certs.wrapt_requests
+import requests
 
 
 main = Blueprint('main', __name__)
 
 
 @main.route('/')
-def index():
+def index() -> IO[any]:
+    """Renderiza a página index do aplicativo."""
     return render_template('index.html')
-
-@main.route('/test')
-def test():
-    return render_template('test.html', resp_gpt = session['resp_gpt'])
 
 
 @main.route('/create_jira_task', methods=['GET'])
-def create_jira_task():
+def create_jira_task() -> requests.Response:
+    """ Chamada api do JIRA: 
+    Realiza a requisição a api do JIRA para enviar as informações necessárias
+    na criação de um card. Envia o retorno da requisição ao Chat GPT.
+    """
     res_gpt = session.get('resp_gpt')
     data = json.loads(res_gpt["choices"][0]["message"]["content"], strict=False)
     titulo = data["Título"]  # incluir tratamento do retorno para pegar titulo
     tema = data["Tema"]  # incluir tratamento do retorno para pegar tema
     descricao = data["Descrição"]  # incluir tratamento do retorno desc.
-    
+
     fields = {
         "project": {"id": 31858},
         "summary": f"[{tema}]{titulo}",
@@ -58,8 +60,12 @@ def create_jira_task():
 
 
 @main.route('/gerar_descricao', methods=['POST'])
-def call_gpt():
-
+def call_gpt() -> requests.Response:
+    """ Chamada api do Chat GPT:
+    Realiza a requisição a api do Chat GPT para realizar a geração do texto de retorno.
+    Também envia, junto da requisição, um prompt comportamental  que especifica
+    como o modelo deve agir.
+    """
     openai.api_type = "azure"
     openai.api_base = "https://cognicao-dev-clustheo.openai.azure.com/"
     openai.api_version = "2023-03-15-preview"
@@ -67,7 +73,7 @@ def call_gpt():
 
     data = request.get_json()
 
-    SYSTEM_PROMPT = '''Você é um auxiliar de criação de tarefas para um
+    system_prompt = '''Você é um auxiliar de criação de tarefas para um
         time de dados, especialista em entendimento e levantamento de
         requisitos, funcionando como atendende de pessoas de negócio
         que não possuem conhecimento técnico, e deve sintetizar a requisição de um usuário, voltada a dados.
@@ -83,7 +89,7 @@ def call_gpt():
     response = openai.ChatCompletion\
         .create(engine="gpt-4",
                 messages=[{"role": "system",
-                           "content": SYSTEM_PROMPT},
+                           "content": system_prompt},
                           {"role": "user",
                            "content": data['prompt']}],
                 temperature=0.7,
