@@ -1,25 +1,34 @@
-from typing import IO
 import json
 from flask import Blueprint,jsonify, render_template, request, session
 import openai
 from atlassian import Jira
 import requests
+import httpx
 
+# Create a httpx client and pass the SSL certificate path or set to False
+httpx_client = httpx.Client(http2=True, verify=False)
 
 main = Blueprint('main', __name__)
 
 
 @main.route('/')
-def index() -> IO[any]:
-    """Renderiza a página index do aplicativo."""
+def index() -> str:
+    """
+    Renderiza a página index do aplicativo.
+
+    :return: render_template:Callable (str)
+    """
     return render_template('index.html')
 
 
 @main.route('/create_jira_task', methods=['GET'])
 def create_jira_task() -> requests.Response:
-    """ Chamada api do JIRA: 
+    """
+    Chamada api do JIRA:
     Realiza a requisição a api do JIRA para enviar as informações necessárias
     na criação de um card. Envia o retorno da requisição ao Chat GPT.
+
+    :return: requests.Response:json
     """
     res_gpt = session.get('resp_gpt')
     data = json.loads(res_gpt["choices"][0]["message"]["content"], strict=False)
@@ -61,10 +70,13 @@ def create_jira_task() -> requests.Response:
 
 @main.route('/gerar_descricao', methods=['POST'])
 def call_gpt() -> requests.Response:
-    """ Chamada api do Chat GPT:
+    """
+    Chamada api do Chat GPT:
     Realiza a requisição a api do Chat GPT para realizar a geração do texto de retorno.
-    Também envia, junto da requisição, um prompt comportamental  que especifica
+    Também envia, junto da requisição, um prompt comportamental que especifica
     como o modelo deve agir.
+
+    :return: requests.Response:json
     """
     openai.api_type = "azure"
     openai.api_base = "https://cognicao-dev-clustheo.openai.azure.com/"
