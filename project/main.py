@@ -3,13 +3,9 @@ from flask import Blueprint,jsonify, render_template, request, session
 import openai
 from atlassian import Jira
 import requests
-import httpx
 
-# Create a httpx client and pass the SSL certificate path or set to False
-httpx_client = httpx.Client(http2=True, verify=False)
 
 main = Blueprint('main', __name__)
-
 
 @main.route('/')
 def index() -> str:
@@ -59,8 +55,8 @@ def create_jira_task() -> requests.Response:
 
     jira = Jira(
         url="https://teams.sicredi.io/",
-        username="app_jira_assocontas",
-        password="@ut0s3rv1c0DV"
+        username="JIRA-API-USER",
+        password="JIRA-API-PASSWORD"
     )
 
     response = jira.issue_create(fields)
@@ -79,9 +75,9 @@ def call_gpt() -> requests.Response:
     :return: requests.Response:json
     """
     openai.api_type = "azure"
-    openai.api_base = "https://cognicao-dev-clustheo.openai.azure.com/"
+    openai.api_base = "OPENAPI-API"
     openai.api_version = "2023-03-15-preview"
-    openai.api_key = "2a4a3463bc2c4a6e8b336c1fcfd9db2a"
+    openai.api_key = "OPENAPI-API-KEY"
 
     data = request.get_json()
 
@@ -99,18 +95,21 @@ def call_gpt() -> requests.Response:
         não coloque-os separados em novas chaves.'''
 
     response = openai.ChatCompletion\
-        .create(engine="gpt-4",
-                messages=[{"role": "system",
-                           "content": system_prompt},
-                          {"role": "user",
-                           "content": data['prompt']}],
-                temperature=0.7,
-                max_tokens=800,
-                top_p=0.95,
-                frequency_penalty=0,
-                presence_penalty=0,
-                stop=None)
+                        .create(engine="gpt-4",
+                                messages=[{"role": "system",
+                                           "content": system_prompt},
+                                          {"role": "user",
+                                           "content": data['prompt']}],
+                                temperature=0.7,
+                                max_tokens=800,
+                                top_p=0.95,
+                                frequency_penalty=0,
+                                presence_penalty=0,
+                                stop=None)
 
     session['resp_gpt'] = response
+    json_response = jsonify({'response':str(response['choices'][0]['message']['content'])\
+                            .replace('"','').replace("{","")\
+                                .replace("}", "")})
 
-    return jsonify({'response':str(response['choices'][0]['message']['content']).replace('"','').replace("{","").replace("}", "")})
+    return json_response

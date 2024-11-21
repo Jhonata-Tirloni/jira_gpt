@@ -1,14 +1,19 @@
 from flask import Flask
+from typing import Any
 from .main import main as main_blueprint
 
 
-def create_app():
-    """Cria a instância do aplicativo"""
+def create_app() -> Any:
+    """
+        Cria a instância do aplicativo Flask, num servidor localhost, de porta padrão.
+    """
     app = Flask(__name__)
 
-    # Essa key é usada como base para criptografar senhas ao usar um login no aplicativo
-    # Ela é setada aqui, mas, como o aplicativo não usa o flask_login, não é obrigatório
-    # Porém, já a deixei pronta para uso, caso necessário
+    ''' 
+     Essa key é usada como base para criptografar senhas ao usar um login no aplicativo
+     Ela é setada aqui, mas, como o aplicativo não usa o flask_login, não é obrigatório
+     Porém, já a deixei pronta para uso, caso necessário
+    '''
     app.secret_key = """290e0e0bb7c119bc4a8316495fe90d8b07fcf5cbe24ab1e0a470b957878e72bc
                         5d95a8a46f2ba775e53aabf6e9698cd6ac1e00cc6d8b98911b3f09ebf7d94228
                         9772b7b537fd00cfca3697c451b2bc23a13095d4699d2e9e63fd1039e8a0e8db
